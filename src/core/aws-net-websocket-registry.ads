@@ -39,8 +39,13 @@ private with GNAT.Regexp;
 package AWS.Net.WebSocket.Registry is
 
    type Factory is not null access function
-     (Socket  : Socket_Access;
-      Request : AWS.Status.Data) return Object'Class;
+     (Request : AWS.Status.Data) return Object_Class;
+   --  Return a newly allocated object.
+   --  You can use AWS.Status.Parameters (Request) to check what additional
+   --  parameters were sent by the user.
+   --
+   --  This object will later be initialized automatically, via a call to
+   --  AWS.Net.WebSocket.Setup_Socket.
 
    --  Creating and Registering WebSockets
 
@@ -141,7 +146,7 @@ package AWS.Net.WebSocket.Registry is
      with Pre => To /= No_Recipient;
    --  Close connections
 
-   --  Targetting a single WebSocket, these routines are equivalent to the
+   --  Targeting a single WebSocket, these routines are equivalent to the
    --  Net.WebSocket ones but are thread-safe. That is, they can be mixed
    --  with other WebSocket activity to and from the clients.
 
@@ -207,9 +212,9 @@ private
    procedure Shutdown;
    --  Stop the WebServer's servers
 
-   function Register (WebSocket : Object'Class) return Object_Class;
-   --  Register a new WebSocket, returns a reference to the registered
-   --  WebSocket or null if it was impossible to register it.
+   procedure Register (WebSocket : in out Object_Class);
+   --  Register a new WebSocket.
+   --  Sets it to null (and free memory) if it was impossible to register it.
 
    procedure Watch (WebSocket : in out Object_Class)
      with Pre => WebSocket /= null;
